@@ -1,0 +1,11 @@
+ # data files
+ data/
+ # Byte-compiled / optimized / DLL files
+ __pycache__/
+ *.pyc
+ *.pyo
+ *.pyd
+ # Logs and databases
+ *.log
+ *.sql
+ *.sqlite 
