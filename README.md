@@ -174,7 +174,7 @@ If you use HaluGNN in your research, please cite:
 @article{halugnn2025,
   title={HaluGNN: Hallucination Detection in Large Language Models Using Graph Neural Network},
   author={Linggang Kong, Yunlong Zhang, Xiaofeng Zhong, Haoran Fu, Yongjie Wang, Huijun Liu},
-  journal={Expert Systems with Applications},
+  journal={under review},
   year={2025}
 }
 ```
