@@ -57,29 +57,17 @@ class GNNModel(torch.nn.Module):
         x = self.classifier(x)
         return x
 
-# train_file_name = train_data_Data
-# test_file_name = test_data_Data
+train_file_name = f'TriviaQA/llama/{args.type}/TriviaQA_llama_train_data_list.pkl'
+validation_file_name = f'TriviaQA/llama/{args.type}/TriviaQA_llama_validation_data_list.pkl'
+test_file_name = f'TriviaQA/llama/{args.type}/TriviaQA_llama_test_data_list.pkl'
 
-train_file_name = f'/data2/kklg/internalstates_data/TriviaQA/llama/{args.type}/TriviaQA_llama_train_data_list.pkl'
-test_file_name = f'/data2/kklg/internalstates_data/TriviaQA/llama/{args.type}/TriviaQA_llama_test_data_list.pkl'
-# 使用with语句确保文件正确关闭
-with open(train_file_name, 'rb') as file1:
-    # 加载pkl文件内容
-    train_data = pickle.load(file1)    #虽然无法查看，但可以正常读取
-    #print(train_data)
-
-# 使用with语句确保文件正确关闭
-with open(test_file_name, 'rb') as file2:
-    # 加载pkl文件内容
-    test_data = pickle.load(file2)
-    #print(test_data)
 
 train_data_list = train_data
+validation_data_list=validation_data
 test_data_list = test_data
-#加载训练集和测试集
-# 使用邻居采样
 train_loader = DataLoader(train_data_list, batch_size=1, shuffle=True)   #train_data_list
-test_loader = DataLoader(test_data_list, batch_size=1, shuffle=False)    #test_data_list
+validation_loader = DataLoader(validation_data_list, batch_size=1, shuffle=True)   #train_data_list
+test_loader = DataLoader(test_data_list, batch_size=1, shuffle=True)    #test_data_list
 
 # 初始化模型
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
