@@ -52,20 +52,15 @@ class GNNModel(torch.nn.Module):
         return x
 
 train_file_name = f'TriviaQA/Qwen/{args.type}/TriviaQA_Qwen_train_data_list.pkl'
+validation_file_name = f'TriviaQA/Qwen/{args.type}/TriviaQA_Qwen_validation_data_list.pkl'
 test_file_name = f'TriviaQA/Qwen/{args.type}/TriviaQA_Qwen_test_data_list.pkl'
-
-with open(train_file_name, 'rb') as file1:
-    train_data = pickle.load(file1)
-
-
-with open(test_file_name, 'rb') as file2:
-
-    test_data = pickle.load(file2)
 
 
 train_data_list = train_data
+validation_data_list=validation_data
 test_data_list = test_data
 train_loader = DataLoader(train_data_list, batch_size=1, shuffle=True)   #train_data_list
+validation_loader = DataLoader(validation_data_list, batch_size=1, shuffle=True)   #train_data_list
 test_loader = DataLoader(test_data_list, batch_size=1, shuffle=True)    #test_data_list
 
 
@@ -79,9 +74,12 @@ criterion = torch.nn.CrossEntropyLoss()
 
 
 
-def train():
-    model.train()
-    for epoch in range(30):
+def train(model, train_loader, val_loader, criterion, optimizer, scheduler, device, num_epochs=30):
+    
+    for epoch in range(num_epochs):
+        model.train()
+        total_loss = 0
+        
         for data in train_loader:
             data = data.to(device)
             optimizer.zero_grad()
@@ -89,9 +87,34 @@ def train():
             loss = criterion(out, data.y)
             loss.backward()
             optimizer.step()
+            total_loss += loss.item()
+        
+        avg_loss = total_loss / len(train_loader)
+        
+        model.eval()
+        all_preds = []
+        all_labels = []
+        
+        with torch.no_grad():
+            for data in val_loader:
+                data = data.to(device)
+                out = model(data)
+                preds = out.argmax(dim=1)  # 对于CrossEntropyLoss
+                all_preds.extend(preds.cpu().numpy())
+                all_labels.extend(data.y.cpu().numpy())
+        
+        all_preds = np.array(all_preds)
+        all_labels = np.array(all_labels)
+        f1 = f1_score(all_labels, all_preds, average='macro')  
+        
         scheduler.step()
-        currr_lr=scheduler.get_last_lr()[0]
-        print(f'Epoch {epoch+1}, Loss: {loss.item()}, Learning rate: {currr_lr}')
+        current_lr = scheduler.get_last_lr()[0]
+        
+        print(f'Epoch {epoch+1}/{num_epochs}:')
+        print(f'  Train Loss: {avg_loss:.4f}')
+        print(f'  Val F1-Score: {f1:.4f}')
+        print(f'  Learning Rate: {current_lr:.6f}')
+        print('-' * 40)
 
 
 from sklearn.metrics import f1_score
