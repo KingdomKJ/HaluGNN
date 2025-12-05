@@ -36,21 +36,16 @@ class GNNModel(torch.nn.Module):
 
 
 train_file_name = f'sciQ/Qwen/{args.type}/sciQ_Qwen_train_data_list.pkl'
+validation_file_name = f'sciQ/Qwen/{args.type}/sciQ_Qwen_validation_data_list.pkl'
 test_file_name = f'sciQ/Qwen/{args.type}/sciQ_Qwen_test_data_list.pkl'
 
-with open(train_file_name, 'rb') as file1:
-    train_data = pickle.load(file1)    
-
-
-with open(test_file_name, 'rb') as file2:
-    test_data = pickle.load(file2)
 
 train_data_list = train_data
+validation_data_list=validation_data
 test_data_list = test_data
-
-train_loader = DataLoader(train_data_list, batch_size=1, shuffle=True)
-test_loader = DataLoader(test_data_list, batch_size=1, shuffle=True)
-
+train_loader = DataLoader(train_data_list, batch_size=1, shuffle=True)   #train_data_list
+validation_loader = DataLoader(validation_data_list, batch_size=1, shuffle=True)   #train_data_list
+test_loader = DataLoader(test_data_list, batch_size=1, shuffle=True)    #test_data_list
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(device)
